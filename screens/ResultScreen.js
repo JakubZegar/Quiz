@@ -1,5 +1,5 @@
 import React from 'react';
-import {Alert, StyleSheet, Text, View, ScrollView } from 'react-native';
+import {Alert, StyleSheet, Dimensions, Text, View, ScrollView } from 'react-native';
 import MenuButton from '../components/MenuButton';
 
 export default class ResultScreen extends React.Component {
@@ -31,9 +31,11 @@ export default class ResultScreen extends React.Component {
     if( !isLoaded )
     {
       return (
-        <View style={styles.container}>
+        <View style={styles.menuContainerNoPadding}>
             <MenuButton navigation={this.props.navigation} />
-            <Text style={styles.text}>Ładowanie...</Text>
+            <View style={{alignSelf:"center",justifyContent:"center"}}>
+              <Text style={styles.text}>Ładowanie...</Text>
+            </View>
         </View>
       );
     }
@@ -41,12 +43,12 @@ export default class ResultScreen extends React.Component {
     else{
 
       return (
-        <View style={styles.menuContainer}>
+        <View style={styles.menuContainerNoPadding}>
           <MenuButton navigation={this.props.navigation} />
           <ScrollView>
-                  <View style={styles.resultContiner}>
+                  <View style={styles.menuContainer}>
                     {results.map( res =>(
-                      <View  key={res.id} style={styles.result}>
+                      <View  key={res.id} style={styles.resultContainer}>
                         <Text style={styles.textLabel}>
                           Nick: 
                         </Text>
@@ -91,20 +93,47 @@ export default class ResultScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 6,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flex: 1,
+    backgroundColor: '#FFAF53',
+    alignItems:"stretch",
+    justifyContent:'space-around',
+    minWidth: Math.round(Dimensions.get('window').width)-40,
   },
   menuContainer:{
+    flex:3,
+    justifyContent:"center",
+    alignItems:"stretch",
+    padding:20,
+    paddingBottom:0,
+    backgroundColor:"#FFAF53",
+  },
+  menuContainerNoPadding:{
     flex:3,
     justifyContent:"flex-start",
     alignItems:"flex-start",
     paddingTop:30,
+    paddingBottom:0,
     backgroundColor:"#FFAF53",
   },
+  
+  resultContainer:{
+
+    alignItems:"center",
+    justifyContent:"center",
+    padding:10,
+    minHeight:50,
+    backgroundColor:"#E88554",
+    borderColor:"#E55D4A",
+    borderWidth:3,
+    minHeight:230,
+    borderRadius:10,
+    marginBottom:15,
+  },
+
+
   text:{
     fontSize:24,
+    fontWeight:"bold",
   },
   resultContiner:{
     paddingTop:100,

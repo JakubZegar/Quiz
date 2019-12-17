@@ -85,9 +85,9 @@ export default class TestScreen extends React.Component {
     if( !isLoaded && !quizChoosen )
     {
       return (
-        <View style={styles.menuContainer}>
+        <View style={styles.menuContainerNoPadding}>
             <MenuButton navigation={this.props.navigation} />
-            <View style={{alignItems:"center",justifyContent:"center"}}>
+            <View style={{alignSelf:"center",justifyContent:"center"}}>
               <Text style={styles.text}>Ładowanie...</Text>
             </View>
         </View>
@@ -199,18 +199,21 @@ export default class TestScreen extends React.Component {
         return(
           <View style={styles.menuContainer}>
             <View style={styles.container}>
-
-            <Text>Twój wynik to: {numberOfCorrectAnswers} na {totalQuestionsNumber}! Gratulacje!</Text>
-            <TouchableOpacity onPress={()=> this.setState({
-              quizChoosen:false,
-              numberOfCorrectAnswers:0,
-              questionNumber:0,
-              
-            })  }>
-              <View style={styles.answerContainer}>
-                <Text>Wróć</Text>
+              <View style={styles.questionContainer}>
+                <Text style={styles.questionText}>Twój wynik to:</Text>
+                <Text style={styles.questionText}>{numberOfCorrectAnswers} na {totalQuestionsNumber}</Text>
+                <Text style={styles.questionText}>Gratulacje</Text>
               </View>
-            </TouchableOpacity>
+                <TouchableOpacity onPress={()=> this.setState({
+                  quizChoosen:false,
+                  numberOfCorrectAnswers:0,
+                  questionNumber:0,
+                  
+                })  }>
+                  <View style={styles.answerContainer}>
+                    <Text style={styles.questionText}>Wróć</Text>
+                  </View>
+                </TouchableOpacity>
             </View>
           </View>
         );

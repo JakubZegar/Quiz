@@ -11,6 +11,7 @@ const WIDTH = Dimensions.get('window').width;
 
 const DrawerConfig={
     drawerWidth: WIDTH*0.60,
+    drawerBackgroundColor:"#FFCC69"
 }
 
 const DrawerNavigator = createDrawerNavigator({
