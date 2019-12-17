@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import MenuButton from '../components/MenuButton';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -76,9 +76,11 @@ export default class TestScreen extends React.Component {
     if( !isLoaded && !quizChoosen )
     {
       return (
-        <View style={styles.container}>
+        <View style={styles.menuContainer}>
             <MenuButton navigation={this.props.navigation} />
-            <Text style={styles.text}>Ładowanie...</Text>
+            <View style={{alignItems:"center",justifyContent:"center"}}>
+              <Text style={styles.text}>Ładowanie...</Text>
+            </View>
         </View>
       );
     }
@@ -86,28 +88,33 @@ export default class TestScreen extends React.Component {
     else if (isLoaded && !quizChoosen){
       let tagID = 0;
       return (
-        <View style={styles.menuContainer}>
+        <View style={styles.menuContainerNoPadding}>
           <MenuButton navigation={this.props.navigation} />
           <ScrollView>
-                  <View style={styles.container}>
-                    {tests.map( test =>(
-                      <TouchableOpacity  key={test.id} style={styles.touchable} 
-                            onPress={()=> this.getProperQuestions(test.id) }>
-                        <View style={styles.testContainer}  >
-                          <Text style={styles.text}>{test.name}</Text>
-                          <Text style={{}}>{test.description}</Text>
-                          <Text style={styles.descriptionText}>Poziom: {test.level}</Text>
-                          <Text style={styles.descriptionText}>Liczba pytań: {test.numberOfTasks}</Text>
-                          
-                            {test.tags.map( tag =>(
-                              <Text key={tagID++}>#{tag}</Text>
-                            ) )}
-                          
-                        </View>
-                      </TouchableOpacity>
-                    ) )}
-                  </View>
-           </ScrollView>
+            <View style={styles.menuContainer}>
+              
+              
+                      <View style={styles.container}>
+                        {tests.map( test =>(
+                          <TouchableOpacity  key={test.id} style={styles.touchable} 
+                                onPress={()=> this.getProperQuestions(test.id) }>
+                            <View style={styles.testContainer}  >
+                              <Text style={styles.text}>{test.name}</Text>
+                              <Text style={{}}>{test.description}</Text>
+                              <Text style={styles.descriptionText}>Poziom: {test.level}</Text>
+                              <Text style={styles.descriptionText}>Liczba pytań: {test.numberOfTasks}</Text>
+                              
+                                {test.tags.map( tag =>(
+                                  <Text key={tagID++}>#{tag}</Text>
+                                ) )}
+                              
+                            </View>
+                          </TouchableOpacity>
+                        ) )}
+                      </View>
+              
+            </View>
+          </ScrollView>
         </View>
       );
     }
@@ -122,11 +129,13 @@ export default class TestScreen extends React.Component {
         console.log(numberOfCorrectAnswers);
         return(
             <View style={styles.menuContainer}>
+      <Text style={{paddingTop:20, fontWeight:"bold",fontSize:17}} >Pytanie nr {questionNumber+1}</Text>
               <View style={styles.container}>
+                
                 <View style={styles.questionContainer}>
-                  <Text>{questions.tasks[questionNumber].question}</Text>
+                  <Text style={styles.questionText}>{questions.tasks[questionNumber].question}</Text>
                 </View>
-
+                <View style={styles.allAnswersContainer}>
                 {questions.tasks[questionNumber].answers.map(answer => (
                   <TouchableOpacity key={answerKey++} onPress={()=> {this.setState({
                     questionNumber:questionNumber + 1,
@@ -138,12 +147,12 @@ export default class TestScreen extends React.Component {
                     })
                   }}  }>
                     <View style={styles.answerContainer}>
-                      <Text>{answer.content}</Text>
+                      <Text style={styles.answerText}>{answer.content}</Text>
                     </View>
                   </TouchableOpacity>
                 ))}
 
-
+                </View>
               </View>
             </View>
 
@@ -153,9 +162,20 @@ export default class TestScreen extends React.Component {
       {
         return(
           <View style={styles.menuContainer}>
+            <View style={styles.container}>
 
             <Text>Twój wynik to: {numberOfCorrectAnswers} na {totalQuestionsNumber}! Gratulacje!</Text>
-
+            <TouchableOpacity onPress={()=> this.setState({
+              quizChoosen:false,
+              numberOfCorrectAnswers:0,
+              questionNumber:0,
+              
+            })  }>
+              <View style={styles.answerContainer}>
+                <Text>Wróć</Text>
+              </View>
+            </TouchableOpacity>
+            </View>
           </View>
         );
       }
@@ -167,38 +187,75 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFAF53',
-    alignItems: 'stretch',
-    justifyContent:"center",
+    alignItems:"stretch",
+    justifyContent:'space-around',
+    minWidth: Math.round(Dimensions.get('window').width)-40,
   },
   menuContainer:{
     flex:3,
     justifyContent:"flex-start",
     alignItems:"flex-start",
     padding:20,
+
+    paddingBottom:0,
+    backgroundColor:"#FFAF53",
+  },
+  menuContainerNoPadding:{
+    flex:3,
+    justifyContent:"flex-start",
+    alignItems:"flex-start",
     paddingTop:30,
     paddingBottom:0,
     backgroundColor:"#FFAF53",
   },
+  
   questionContainer:{
-    alignItems:"flex-start",
-    justifyContent:"flex-start",
+
+    alignItems:"center",
+    justifyContent:"center",
     padding:10,
     minHeight:50,
     backgroundColor:"#E88554",
     borderColor:"#E55D4A",
+    borderWidth:3,
+    minHeight:230,
+    borderRadius:10,
   },
 
   answerContainer:{
-    alignItems:"cenetr",
-    justifyContent:"space-between",
+
+    alignItems:"center",
+    justifyContent:"center",
     padding:10,
     backgroundColor:"#E88554",
     borderColor:"#E55D4A",
+    minHeight:65,
+    borderWidth:3,
+    borderRadius:10,
+    marginBottom:5,
 
+  },
+  allAnswersContainer:{
+    alignItems:"stretch",
+    justifyContent:"space-around",
   },
 
   endButton:{
+    alignItems:"center",
+    justifyContent:"center",
+    padding:10,
+    minHeight:50,
+    backgroundColor:"#E88554",
+    borderColor:"#E55D4A",
+    borderWidth:3,
+  },
+  questionText:{
+    fontSize:19,
+    fontWeight:"bold",
 
+  },
+  answerText:{
+    fontSize:16,
   },
 
   text:{
@@ -212,19 +269,13 @@ const styles = StyleSheet.create({
     padding:10,
     minHeight:260,
     backgroundColor:"#E88554",
-    borderStyle:"dotted",
     borderColor:"#E55D4A",
-    borderTopWidth:3,
-    borderLeftWidth:3,
-    borderRightWidth:3,
+    borderWidth:3,
+    borderRadius:10,
+    marginBottom:20,
     
   },
-  touchable:{
-    justifyContent:"space-between",
-    alignItems:"stretch",
-    backgroundColor:"#E88554",
 
-  },
   descriptionText:{
     fontWeight:"bold",
     paddingTop:4,
