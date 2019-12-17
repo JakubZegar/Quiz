@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import React, {useEffect} from 'react';
+import { StyleSheet, Text, View,Animated, Dimensions } from 'react-native';
 import MenuButton from '../components/MenuButton';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -17,8 +17,13 @@ export default class TestScreen extends React.Component {
       questionNumber:0,
       totalQuestionsNumber:0,
       numberOfCorrectAnswers:0,
+
+      duration:30,
+
     }
+    this.timer = null;
   }
+
 
   componentDidMount() {
 
@@ -30,9 +35,12 @@ export default class TestScreen extends React.Component {
             tests:json,
           })
         })
-        console.log("Załadowano testy")
-  }
 
+     console.log("mounted")
+  
+  }
+  
+  
   getProperQuestions( id ) {
     let properQuestions="";
     if(id == '5ddbd9525531310a5a8f2480')
@@ -64,11 +72,12 @@ export default class TestScreen extends React.Component {
         questions:json,
         questionsReady:true,
         totalQuestionsNumber:json.tasks.length,
+
       })
     })
-
   }
 
+  
   render(){
 
     var { tests, isLoaded, quizChoosen, questions, totalQuestionsNumber, numberOfCorrectAnswers, questionNumber } = this.state;
@@ -122,14 +131,39 @@ export default class TestScreen extends React.Component {
     {
 
       if( questionNumber < totalQuestionsNumber)
-      {
-        var answerKey=0;
-        console.log(questionNumber);
-        console.log(totalQuestionsNumber);
-        console.log(numberOfCorrectAnswers);
+      { 
+
+        var answerKey=0
+        
+        this.timer = setTimeout(() => { this.setState({duration:this.state.duration-1}); }, 1000)
+        
+        if(this.state.duration < 0 ){
+          clearInterval(this.timer)
+          this.setState({
+            
+            duration:30,
+            questionNumber:this.state.questionNumber+1
+          });
+           
+        }
         return(
             <View style={styles.menuContainer}>
-      <Text style={{paddingTop:20, fontWeight:"bold",fontSize:17}} >Pytanie nr {questionNumber+1}</Text>
+
+
+              <Text style={{paddingTop:20, fontWeight:"bold",fontSize:17}} >Pytanie nr {questionNumber+1}</Text>
+              <View style={styles.timerContainer}>
+                <View style={{backgroundColor:"green",width:this.state.duration*11.55,
+                              height:14,
+                              borderRadius:15,
+                              backgroundColor:"green",
+                              alignItems:"center",
+                              justifyContent:"center",}}>
+                
+
+                </View>
+                <Text style={styles.durationText}>{this.state.duration}</Text>
+                
+              </View> 
               <View style={styles.container}>
                 
                 <View style={styles.questionContainer}>
@@ -139,7 +173,9 @@ export default class TestScreen extends React.Component {
                 {questions.tasks[questionNumber].answers.map(answer => (
                   <TouchableOpacity key={answerKey++} onPress={()=> {this.setState({
                     questionNumber:questionNumber + 1,
+                    duration:30,
                   });
+                  clearInterval(this.timer);
                   if(answer.isCorrect == true )
                   {
                     this.setState({
@@ -280,5 +316,27 @@ const styles = StyleSheet.create({
     fontWeight:"bold",
     paddingTop:4,
     paddingBottom:4,
+  },
+  timerContainer:{
+    width:'100%',
+    height:20,
+    borderColor:"black",
+    borderWidth:3,
+    borderRadius:20,
+    justifyContent:"center",
+  },
+  timerFill:{
+    width:'100%',
+    height:14,
+    borderRadius:15,
+    backgroundColor:"green",
+   
+    
+
+  },
+  durationText:{
+    position:"absolute",
+    zIndex:1,
+    alignSelf:"center"
   }
 });
