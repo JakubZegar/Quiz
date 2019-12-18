@@ -24,6 +24,8 @@ const DrawerNavigator = createDrawerNavigator({
     Test:{
         screen: TestScreen,
     },
+
+
     
 },
 DrawerConfig)

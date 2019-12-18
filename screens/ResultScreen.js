@@ -1,6 +1,9 @@
 import React from 'react';
-import {Alert, StyleSheet, Dimensions, Text, View, ScrollView } from 'react-native';
+import {Alert, RefreshControl, StyleSheet, Dimensions, Text, View, ScrollView } from 'react-native';
 import MenuButton from '../components/MenuButton';
+import Constants from 'expo-constants';
+
+
 
 export default class ResultScreen extends React.Component {
 
@@ -9,6 +12,7 @@ export default class ResultScreen extends React.Component {
     this.state = {
       results:[],
       isLoaded:false,
+      refreshing:false,
     }
   }
 
@@ -23,6 +27,23 @@ export default class ResultScreen extends React.Component {
       })
   }
 
+  _onRefresh(){
+    this.setState({
+      refreshing:true,
+    })
+    fetch('http://www.json-generator.com/api/json/get/cghADpPyOG?indent=2')
+      .then( res => res.json())
+      .then(json => {
+        this.setState({
+          isLoaded:true,
+          results:json,
+        })
+      }).then(() => {
+        this.setState({
+          refreshing:false,
+        })
+      })
+  }
   
   render(){
 
@@ -45,7 +66,11 @@ export default class ResultScreen extends React.Component {
       return (
         <View style={styles.menuContainerNoPadding}>
           <MenuButton navigation={this.props.navigation} />
-          <ScrollView>
+          
+          <ScrollView refreshControl={
+            <RefreshControl refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh.bind(this)}/>
+          }>
                   <View style={styles.menuContainer}>
                     {results.map( res =>(
                       <View  key={res.id} style={styles.resultContainer}>
@@ -97,7 +122,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFAF53',
     alignItems:"stretch",
     justifyContent:'space-around',
-    minWidth: Math.round(Dimensions.get('window').width)-40,
   },
   menuContainer:{
     flex:3,
@@ -132,21 +156,19 @@ const styles = StyleSheet.create({
 
 
   text:{
-    fontSize:24,
+    fontSize:20,
     fontWeight:"bold",
   },
-  resultContiner:{
-    paddingTop:100,
-
-  },
+  
   result:{
     padding:10,
   },
   textLabel:{
     fontWeight:"bold",
-    fontSize:24,
+    fontSize:20,
   },
   textValue:{
-    fontSize:24,
+    fontSize:20,
+    alignSelf:"center"
   }
 });
