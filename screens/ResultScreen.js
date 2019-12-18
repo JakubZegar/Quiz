@@ -17,7 +17,7 @@ export default class ResultScreen extends React.Component {
   }
 
   componentDidMount() {
-    fetch('http://www.json-generator.com/api/json/get/cghADpPyOG?indent=2')
+    fetch('http://tgryl.pl/quiz/results')
       .then( res => res.json())
       .then(json => {
         this.setState({
@@ -31,7 +31,7 @@ export default class ResultScreen extends React.Component {
     this.setState({
       refreshing:true,
     })
-    fetch('http://www.json-generator.com/api/json/get/cghADpPyOG?indent=2')
+    fetch('http://tgryl.pl/quiz/results')
       .then( res => res.json())
       .then(json => {
         this.setState({

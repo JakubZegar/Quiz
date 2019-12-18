@@ -3,6 +3,8 @@ import { StyleSheet, Text, View,Animated, Dimensions } from 'react-native';
 import MenuButton from '../components/MenuButton';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
+const address='http://tgryl.pl/quiz/result'
+
 export default class TestScreen extends React.Component {
   constructor(props){
     super(props);
@@ -22,12 +24,12 @@ export default class TestScreen extends React.Component {
 
     }
     this.timer = null;
+    
   }
-
 
   componentDidMount() {
 
-      fetch('http://www.json-generator.com/api/json/get/bQeTaXPVKa?indent=2')
+      fetch('http://tgryl.pl/quiz/tests')
         .then( res => res.json())
         .then(json => {
           this.setState({
@@ -42,29 +44,8 @@ export default class TestScreen extends React.Component {
   
   
   getProperQuestions( id ) {
-    let properQuestions="";
-    if(id == '5ddbd9525531310a5a8f2480')
-    {
-      properQuestions="http://www.json-generator.com/api/json/get/cfLcNGiOrm?indent=2"
-    }
-    else if (id == '5ddbd9525531310a5a8f2482')
-    {
-      properQuestions="http://www.json-generator.com/api/json/get/cntICnZOdK?indent=2"
-    }
-    else if (id == '5ddbd9525531310a5a8f2481')
-    {
-      properQuestions="http://www.json-generator.com/api/json/get/bVjyJtxgRK?indent=2"
-    }
-    else if (id == '5ddbd9525531310a5a8f2483')
-    {
-      properQuestions='http://www.json-generator.com/api/json/get/bPeRyRfSXm?indent=2'
-    }
-    else
-    {
-      alert("error")
-    }
     
-    fetch(properQuestions)
+    fetch('http://tgryl.pl/quiz/test/'+id)
     .then( res => res.json())
     .then(json => {
       this.setState({
@@ -77,7 +58,35 @@ export default class TestScreen extends React.Component {
     })
   }
 
-  
+  _postData = async (formData) => {
+    fetch(address,{
+      method:'POST',
+      body:formData
+    }).then((response)=> response.json() )
+    .then((responseJson) => {
+      console.log(responseJson)
+    })
+
+  }
+
+  async insertResult(params) {
+    try {1
+       fetch(address, {
+        method:'POST',
+        headers:{
+          'Accept':'application/json',
+          'Content-Type':'application/json',
+        },
+        body: JSON.stringify(params)
+      });
+      let respondeJson = await response.json();
+      return respondeJson.result;
+
+    } catch (error) {
+      
+    }
+  }
+
   render(){
 
     var { tests, isLoaded, quizChoosen, questions, totalQuestionsNumber, numberOfCorrectAnswers, questionNumber } = this.state;
@@ -196,6 +205,26 @@ export default class TestScreen extends React.Component {
       }
       else
       {
+        var date = new Date();
+        
+        var currentDate = date.getDate()+'-'+date.getMonth()+'-'+date.getFullYear()
+
+        let PAYLOAD = {
+          "nick":"Kuba",
+          "score":numberOfCorrectAnswers,
+          "total":totalQuestionsNumber,
+          "type":questions.name,
+          "date":date
+        }
+
+        let formData = new FormData();
+        
+        formData.append('nick','Kuba')
+        formData.append('score', numberOfCorrectAnswers)
+        formData.append('total',totalQuestionsNumber)
+        formData.append('type',questions.name)
+        formData.append('date',currentDate)
+
         return(
           <View style={styles.menuContainer}>
             <View style={styles.container}>
@@ -204,12 +233,12 @@ export default class TestScreen extends React.Component {
                 <Text style={styles.questionText}>{numberOfCorrectAnswers} na {totalQuestionsNumber}</Text>
                 <Text style={styles.questionText}>Gratulacje</Text>
               </View>
-                <TouchableOpacity onPress={()=> this.setState({
+                <TouchableOpacity onPress={()=> [this.setState({
                   quizChoosen:false,
                   numberOfCorrectAnswers:0,
                   questionNumber:0,
                   
-                })  }>
+                }),this._postData(formData) ]  }>
                   <View style={styles.answerContainer}>
                     <Text style={styles.questionText}>Wróć</Text>
                   </View>
